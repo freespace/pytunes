@@ -2,9 +2,10 @@
 
 from optmatch import OptionMatcher, optmatcher, optset
 from Library import Library
-from random import shuffle
 from subprocess import call
 from os.path import expandvars, expanduser, basename
+
+import random
 
 class pytunes(OptionMatcher):
   """
@@ -17,16 +18,19 @@ class pytunes(OptionMatcher):
   @optmatcher
   def main(self, 
       libraryOption="~/Music/iTunes/iTunes Music Library.xml", 
-      playlistOption='list'):
+      playlist='',
+      shuffleFlag=False,
+      repeatFlag=False):
     libpath = expanduser(libraryOption)
     libpath = expandvars(libpath)
 
     self._lib = Library(libpath)
 
-    if playlistOption == 'list':
-      return self.print_playlists()
+    if playlist == '':
+      self.print_playlists()
+      return 0
     else:
-      return self.play_playlist(playlistOption)
+      return self.play_playlist(playlist, shuffleFlag, repeatFlag)
 
   def print_playlists(self):
     playlists = self._lib.playlists()
@@ -34,22 +38,32 @@ class pytunes(OptionMatcher):
     for pl in playlists:
       print '\t',pl
 
-  def play_playlist(self, playlistname):
+  def play_playlist(self, playlistname, shuffle, repeat):
     pl=self._lib.get_playlist(playlistname)
     if not pl:
       print 'No such playlist (%s) or empty playlist'%(playlistname)
       return -1
     else:
       while True:
-        print 'Shuffling playlist %s...'%(playlistname)
-        shuffle(pl)
+        if shuffle:
+          print 'Shuffling playlist %s...'%(playlistname)
+          random.shuffle(pl)
+
         for idx,track in enumerate(pl):
           print '[%d/%d] %s'%(idx+1, len(pl), basename(track))
           call(['mplayer', '-vo', 'none', '-really-quiet', track])
+
+        if not repeat:
+          break
+    return 0
 
 
 if __name__ == '__main__':
   import sys
   app = pytunes()
+  app.setAliases({
+    'r':'repeat',
+    's':'shuffle'
+  })
   sys.exit(app.process(sys.argv))
 
