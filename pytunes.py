@@ -15,24 +15,41 @@ class pytunes(OptionMatcher):
   Additional options may include -shuffle and -repeat.
   """
   @optmatcher
-  def main(self, libraryOption="~/Music/iTunes/iTunes Music Library.xml"):
+  def main(self, 
+      libraryOption="~/Music/iTunes/iTunes Music Library.xml", 
+      playlistOption='list'):
     libpath = expanduser(libraryOption)
     libpath = expandvars(libpath)
 
-    lib = Library(libpath)
+    self._lib = Library(libpath)
 
-    print 'Loading library...'
-    lush = lib.get_playlist('lush')
-    while True:
-      print 'Shuffling...'
-      shuffle(lush)
-      for track in lush:
-        print '>',basename(track)
-        call(['mplayer', '-vo', 'none', '-really-quiet', track])
+    if playlistOption == 'list':
+      return self.print_playlists()
+    else:
+      return self.play_playlist(playlistOption)
 
-    return 0
+  def print_playlists(self):
+    playlists = self._lib.playlists()
+    print 'Playlists:'
+    for pl in playlists:
+      print '\t',pl
+
+  def play_playlist(self, playlistname):
+    pl=self._lib.get_playlist(playlistname)
+    if not pl:
+      print 'No such playlist (%s) or empty playlist'%(playlistname)
+      return -1
+    else:
+      while True:
+        print 'Shuffling playlist %s...'%(playlistname)
+        shuffle(pl)
+        for idx,track in enumerate(pl):
+          print '[%d/%d] %s'%(idx+1, len(pl), basename(track))
+          call(['mplayer', '-vo', 'none', '-really-quiet', track])
+
 
 if __name__ == '__main__':
   import sys
-  sys.exit(pytunes().process(sys.argv))
+  app = pytunes()
+  sys.exit(app.process(sys.argv))
 
