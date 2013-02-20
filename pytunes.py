@@ -7,6 +7,8 @@ from os.path import expandvars, expanduser, basename
 
 import random
 
+MUSIC_PLAYER='mplayer -vo none -really-quiet'.split(' ')
+
 class pytunes(OptionMatcher):
   """
   Right now this only plays the one playlist which I actually use. In the future
@@ -51,7 +53,7 @@ class pytunes(OptionMatcher):
 
         for idx,track in enumerate(pl):
           print '[%d/%d] %s'%(idx+1, len(pl), basename(track))
-          call(['mplayer', '-vo', 'none', '-really-quiet', track])
+          call(MUSIC_PLAYER+[track])
 
         if not repeat:
           break
