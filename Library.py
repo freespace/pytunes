@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 
-import plistlib
+# Use native plist if available, it is much faster
+try:
+  from Foundation import NSDictionary
+  def _readlib(path):
+    return NSDictionary.dictionaryWithContentsOfFile_(path)
+except ImportError:
+  import plistlib
+  def _readlib(path):
+    return plistlib.readPlist(path)
+
 import urllib
 
 class Library(object):
@@ -9,8 +18,7 @@ class Library(object):
   """
   def __init__(self, libraryxml='./iTunes Music Library.xml'):
     super(Library, self).__init__()
-
-    self._library = plistlib.readPlist(libraryxml)
+    self._library = _readlib(libraryxml)
 
   def playlists(self):
     """
@@ -30,10 +38,15 @@ class Library(object):
     """
     playlists = self._library['Playlists']
     trackdicts = []
+    exists = False
     for playlist in playlists:
       if playlist['Name'] == name:
         trackdicts = playlist['Playlist Items']
+        exists = True
         break
+
+    if not exists:
+      return None
 
     trackids = []
     for track in trackdicts:
