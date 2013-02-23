@@ -36,7 +36,7 @@ class Library(object):
 
   def get_playlist(self, name, filterfunc=None):
     """
-    Return the specified playlist. Each item in the returned list is a 
+    Return the specified playlist. Each item in the returned list is a
     2-tuple consisting of (track-id, track-file-path)
     """
     if not filterfunc:
@@ -62,7 +62,7 @@ class Library(object):
     for trackid in trackids:
       trackdict = self.get_track(trackid)
       if filterfunc(trackdict):
-        tracklocation = trackdict['Location'] 
+        tracklocation = trackdict['Location']
         tracklocation = tracklocation.replace('file://localhost','')
         tracklocation = urllib.unquote(tracklocation)
 

@@ -26,8 +26,8 @@ class pytunes(OptionMatcher):
         None)
 
   @optmatcher
-  def main(self, 
-      libraryOption="~/Music/iTunes/iTunes Music Library.xml", 
+  def main(self,
+      libraryOption="~/Music/iTunes/iTunes Music Library.xml",
       playlist='',
       shuffleFlag=False,
       repeatFlag=False,
@@ -94,4 +94,3 @@ if __name__ == '__main__':
   import sys
   app = pytunes()
   sys.exit(app.process(sys.argv))
-
