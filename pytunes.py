@@ -15,12 +15,14 @@ class pytunes(OptionMatcher):
     super(pytunes,self).__init__()
     self.setAliases({
       'r':'repeat',
-      's':'shuffle'
+      's':'shuffle',
+      'u':'unique',
+      'k':'skip-artists'
     })
 
     self.setUsageInfo(
-        {'skip-artists':'Comma separated list of artists to skip, using shell-style case-insensitive matching'},
-
+        {'skip-artists':'Comma separated list of artists to skip, using shell-style case-insensitive matching',
+        'unique':'If given, duplicate entries in playlists will be removed'},
         None)
 
   """
@@ -36,7 +38,8 @@ class pytunes(OptionMatcher):
       playlist='',
       shuffleFlag=False,
       repeatFlag=False,
-      skipArtistsOption=''):
+      skipArtistsOption='',
+      uniqueFlag=False):
     libpath = expanduser(libraryOption)
     libpath = expandvars(libpath)
 
@@ -47,7 +50,7 @@ class pytunes(OptionMatcher):
       self.print_playlists()
       return 0
     else:
-      return self.play_playlist(playlist, shuffleFlag, repeatFlag)
+      return self.play_playlist(playlist, shuffleFlag, repeatFlag, uniqueFlag)
 
   def print_playlists(self):
     playlists = self._lib.playlists()
@@ -55,7 +58,7 @@ class pytunes(OptionMatcher):
     for pl in playlists:
       print '\t',pl
 
-  def play_playlist(self, playlistname, shuffle, repeat):
+  def play_playlist(self, playlistname, shuffle, repeat, unique):
     def _filter(track):
       artist = track.get('Artist')
       skip = False
@@ -72,6 +75,9 @@ class pytunes(OptionMatcher):
       print 'No such playlist (%s) or empty playlist'%(playlistname)
       return -1
     else:
+      if unique:
+        pl = set(pl)
+        pl = list(pl)
       while True:
         if shuffle:
           print 'Shuffling playlist %s...'%(playlistname)
