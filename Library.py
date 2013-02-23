@@ -31,11 +31,14 @@ class Library(object):
 
     return playlistnames
 
-  def get_playlist(self, name):
+  def get_playlist(self, name, filterfunc=None):
     """
     Return the specified playlist. Each item in the returned list is a path to
     a file in the playlist
     """
+    if not filterfunc:
+      filterfunc = lambda x: True
+
     playlists = self._library['Playlists']
     trackdicts = []
     exists = False
@@ -55,9 +58,10 @@ class Library(object):
     trackfilepaths = []
     for trackid in trackids:
       trackdict = self._library['Tracks'][trackid]
-      tracklocation = trackdict['Location'] 
-      tracklocation = tracklocation.replace('file://localhost','')
-      tracklocation = urllib.unquote(tracklocation)
-      trackfilepaths.append(tracklocation)
+      if filterfunc(trackdict):
+        tracklocation = trackdict['Location'] 
+        tracklocation = tracklocation.replace('file://localhost','')
+        tracklocation = urllib.unquote(tracklocation)
+        trackfilepaths.append(tracklocation)
 
     return trackfilepaths
