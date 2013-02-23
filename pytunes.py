@@ -83,9 +83,14 @@ class pytunes(OptionMatcher):
           print 'Shuffling playlist %s...'%(playlistname)
           random.shuffle(pl)
 
-        for idx,track in enumerate(pl):
-          print '[%d/%d] %s'%(idx+1, len(pl), basename(track))
-          call(MUSIC_PLAYER+[track])
+        for idx,ttuple in enumerate(pl):
+          trackid = ttuple[0]
+          trackpath = ttuple[1]
+
+          track = self._lib.get_track(trackid)
+
+          print '[%3d/%3d] %-24s %s'%(idx+1, len(pl), track['Artist'][0:24], track['Name'])
+          call(MUSIC_PLAYER+[trackpath])
 
         if not repeat:
           break
