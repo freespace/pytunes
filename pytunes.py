@@ -25,13 +25,6 @@ class pytunes(OptionMatcher):
         'unique':'If given, duplicate entries in playlists will be removed'},
         None)
 
-  """
-  Right now this only plays the one playlist which I actually use. In the future
-  we should add an options like -playlist which by itself prints all the available
-  playlist. If a playlist name is given, then that playlist is played. 
-
-  Additional options may include -shuffle and -repeat.
-  """
   @optmatcher
   def main(self, 
       libraryOption="~/Music/iTunes/iTunes Music Library.xml", 
